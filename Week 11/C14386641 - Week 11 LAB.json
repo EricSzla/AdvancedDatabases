@@ -1,0 +1,135 @@
+// Advanced Databases
+// Developed by: Eryk Szlachetka
+// Student number: C14386641
+// This is a .json file for question one and two Lab 10.
+
+
+//------------------------------------------ QUESTION ONE ------------------------------------------ //
+
+// Create tom and bill
+CREATE (e1:Person { name: "Tom", country: "Spain", age: 28, sport: "football" });
+CREATE (e2:Person { name: "Bill", country: "Ireland", age: 23, sport: "" });
+MATCH (r:Person {name:'Mary'}) RETURN e;
+
+// Make tom a friend of marry
+MATCH (e:Person {name:'Tom'}), (r:Person {name:'Mary'})
+CREATE (e)-[:FRIEND_OF]->(r);
+
+// Make bill a friend of mary and denis
+MATCH (e:Person {name:'Bill'}), (r:Person {name:'Mary'})
+CREATE (e)-[:FRIEND_OF]->(r);
+MATCH (e:Person {name:'Bill'}), (r:Person {name:'Denis'})
+CREATE (e)-[:FRIEND_OF]->(r);
+
+// Show the age of Denis and his friends
+MATCH (e:Person {name:"Denis"})-[:FRIEND_OF*1..3]-(e2:Person) RETURN e2;
+
+// Show all the person from Scotland
+MATCH (e:Person {country:'Scotland'}) RETURN e;
+
+// Show all the person with age less or equal than 20 from Ireland
+MATCH (e:Person {country:'Ireland'}) WHERE e.age <= 20 RETURN e;
+
+// Show  all the person with age less or equal 30 playing football
+MATCH (e:Person {sport:'football'}) WHERE e.age <= 30 RETURN e;
+
+// Count the person by country
+MATCH (e:Person) RETURN e.country, COUNT(e.country) as population;
+
+// Show the average age of the person group by sport
+MATCH (e:Person) RETURN e.sport, AVG(e.age) as avg_sport;
+
+// Show all the direct friends of Mary
+MATCH (e:Person {name:"Mary"})-[:FRIEND_OF]->(e2:Person) RETURN e2;
+
+// Show all the friends of Paul with a maximum distance of 5 steps
+MATCH (e:Person {name:"Paul"})-[:FRIEND_OF*1..5]->(e2:Person) RETURN e2;
+
+// Count all the friends of Paul with maximum distance 5 steps by nationality
+MATCH (e:Person {name:"Paul"})-[:FRIEND_OF*1..5]->(e2:Person) RETURN e2.country, COUNT(e2) as fr_count;
+
+// Show the path(s) between Paul and Jennifer. For each path show the length.
+MATCH path = (d:Person {name:"Paul"})-[:FRIEND_OF*..5]->(c:Person {name:"Lisa"})
+RETURN path, length(path);
+
+
+// Show the shortest path between Paul and Lisa.
+MATCH
+path = shortestPath((e:Student {name:"Paul"})-[:FRIEND_OF*..5]->(m:Student {name:"Lisa"}))
+RETURN path
+
+// Show (if exists) a connection between Mary and all her friends, where the path can only
+// contain persons that play football
+MATCH (e:Person {name:"Mary"})
+MATCH (e)-[:FRIEND_OF]->(m:Person) WHERE m.sport = 'Football' RETURN path;
+
+MATCH (e:Person {name:"Mary"})
+MATCH path = (e)-[:FRIEND_OF]->(m:Person) RETURN path, filter(  n IN nodes(path) WHERE n.sport = 'Football');
+
+MATCH (fb:Person) WHERE fb.sport = 'Football' RETURN fb
+UNION
+MATCH (e:Person {name:"Mary"})-[:FRIEND_OF*1..5]->(fb) RETURN fb;
+
+
+//------------------------------------------ QUESTION TWO ------------------------------------------ //
+
+// Create Airports
+CREATE (a1:Airport { city: "dublin", country: "ireland", code: "dub" }),
+(a2:Airport { city: "cork", country: "ireland", code: "ork" }),
+(a3:Airport { city: "london", country: "uk", code: "lhr" }),
+(a4:Airport { city: "rome", country: "italy", code: "fco" }),
+(a5:Airport { city: "moscow", country: "russia", code: "dme" }),
+(a6:Airport { city: "hongkong", country: "china", code: "hkg" }),
+(a7:Airport { city: "amsterdam", country: "holland", code: "ams" }),
+(a8:Airport { city: "berlin", country: "germany", code: "txl" }),
+(a9:Airport { city: "paris", country: "france", code: "cdg" }),
+(a10:Airport { city: "newyork", country: "usa", code: "jfk" }),
+(a11:Airport { city: "chicago", country: "usa", code: "ord" }),
+(a12:Airport { city: "sao_paulo", country: "brazil", code: "gru" }),
+(a13:Airport { city: "rio", country: "brazil", code: "gig" }),
+// Create connections
+(a1)-[:CONNECTED_TO{ time:45,price:150} ]->(a3),(a3)-[:CONNECTED_TO{ time:45,price:150} ]->(a1),
+(a4)-[:CONNECTED_TO{ time:150,price:400} ]->(a2),(a2)-[:CONNECTED_TO{ time:150,price:400} ]->(a4),
+(a4)-[:CONNECTED_TO{ time:120,price:500} ]->(a9),(a9)-[:CONNECTED_TO{ time:120,price:500} ]->(a4),
+(a9)-[:CONNECTED_TO{ time:60,price:200} ]->(a1),(a1)-[:CONNECTED_TO{ time:60,price:200} ]->(a9),
+(a8)-[:CONNECTED_TO{ time:240,price:900} ]->(a5),(a5)-[:CONNECTED_TO{ time:240,price:900} ]->(a8),
+(a9)-[:CONNECTED_TO{ time:30,price:100} ]->(a7),(a7)-[:CONNECTED_TO{ time:30,price:100} ]->(a9),
+(a8)-[:CONNECTED_TO{ time:120,price:900} ]->(a1),(a1)-[:CONNECTED_TO{ time:120,price:900} ]->(a8),
+(a3)-[:CONNECTED_TO{ time:700,price:1100} ]->(a10),(a10)-[:CONNECTED_TO{ time:700,price:1100} ]->(a3),
+(a1)-[:CONNECTED_TO{ time:360,price:800} ]->(a10),(a10)-[:CONNECTED_TO{ time:360,price:800} ]->(a1),
+(a1)-[:CONNECTED_TO{ time:50,price:50} ]->(a2),(a2)-[:CONNECTED_TO{ time:50,price:50} ]->(a1),
+(a1)-[:CONNECTED_TO{ time:150,price:70} ]->(a4),(a4)-[:CONNECTED_TO{ time:150,price:70} ]->(a1),
+(a1)-[:CONNECTED_TO{ time:480,price:890} ]->(a11),(a11)-[:CONNECTED_TO{ time:480,price:890} ]->(a1),
+(a7)-[:CONNECTED_TO{ time:660,price:750} ]->(a6),(a6)-[:CONNECTED_TO{ time:660,price:750} ]->(a7),
+(a3)-[:CONNECTED_TO{ time:700,price:1000} ]->(a6),(a6)-[:CONNECTED_TO{ time:700,price:1000} ]->(a3),
+(a1)-[:CONNECTED_TO{ time:90,price:60} ]->(a7),(a7)-[:CONNECTED_TO{ time:90,price:60} ]->(a1),
+(a5)-[:CONNECTED_TO{ time:720,price:1000} ]->(a10),(a10)-[:CONNECTED_TO{ time:720,price:1000} ]->(a5),
+(a5)-[:CONNECTED_TO{ time:420,price:500} ]->(a6),(a6)-[:CONNECTED_TO{ time:420,price:500} ]->(a5),
+(a10)-[:CONNECTED_TO{ time:240,price:430} ]->(a11),(a11)-[:CONNECTED_TO{ time:240,price:430} ]->(a10),
+(a1)-[:CONNECTED_TO{ time:900,price:800} ]->(a12),(a12)-[:CONNECTED_TO{ time:900,price:800} ]->(a1),
+(a12)-[:CONNECTED_TO{ time:840,price:650} ]->(a10),(a10)-[:CONNECTED_TO{ time:840,price:650} ]->(a12),
+(a13)-[:CONNECTED_TO{ time:1200,price:1100} ]->(a8),(a8)-[:CONNECTED_TO{ time:1200,price:1100} ]->(a13);
+
+// Find the total time from Moscow to Rio. Show also the path (airport connections)
+// dme - moscow and gig - Rio
+MATCH path = (a: Airport {code:"dme"})-[:CONNECTED_TO*..5]->(b:Airport {code:"gig"})
+RETURN
+path, REDUCE (tot = 0, n IN relationships(path) | tot + n.time) as tot_time;
+
+// Show all the flights from Dublin to any destination and sort them by price (from the most expensive)
+// dub - dublin
+MATCH path = (a: Airport {code:"dub"})-[:CONNECTED_TO*..5]->(b:Airport)
+RETURN
+path, REDUCE (tot = 0, n IN relationships(path) | tot + n.price) as tot_price
+ORDER BY tot_price DESC;
+// Show what can be reached from Chicago in one or two steps (= direct flight or 1 change only)
+// ord - chicago
+MATCH path = (a: Airport {code:"ord"})-[:CONNECTED_TO*..2]->(b:Airport)
+RETURN
+path;
+// Show what can be reached from London in less than 240 minutes (4 hours).
+MATCH path = (a: Airport {code:"lhr"})-[:CONNECTED_TO*..5]->(b:Airport)
+WITH REDUCE (tot = 0, n IN relationships(path) | tot + n.time) as tot_time, n  
+WHERE tot_time <240
+RETURN tot_time, n;
+
